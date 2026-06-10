@@ -12,18 +12,26 @@ CELL_HEIGHT = SCREEN_HEIGHT//ROWS
 
 grid = [[1 for _ in range(COLS)] for _ in range(ROWS)]
 
-def draw_grid(screen,grid):
-    for row in range(ROWS):
-        for col in range(COLS):
-            x = col * CELL_WIDTH
-            y = row * CELL_HEIGHT
-            color = (139, 90, 43)
-            if row % 2 == 0:
-                color = (34, 139, 34)
-            pygame.draw.rect(screen , color , (x,y,CELL_WIDTH,CELL_HEIGHT))
-            pygame.draw.rect(screen, (0,0,0),(x,y,CELL_WIDTH,CELL_HEIGHT),1)
+rows = []
+y = 0
+for i in range(9):
+    if i % 2 == 0:
+        rows.append({"y": y, "height": 88, "type": "crop"})
+        y += 88
+    else:
+        rows.append({"y": y, "height": 40, "type": "pathways"})
+        y += 40
 
-
+def draw_grid(screen,rows):
+    for row in rows:
+        y = row["y"]
+        height = row["height"]
+        if row["type"] == "crop":
+            color = (34, 139, 34)
+        else:
+                color = (139, 90, 43)
+        pygame.draw.rect(screen , color , (0,y,SCREEN_WIDTH,height))
+        pygame.draw.rect(screen, (0,0,0),(0,y,SCREEN_WIDTH,height),1)
 
 def main():
     pygame.init()
@@ -37,7 +45,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((0,0,0))
-        draw_grid(screen,grid)
+        draw_grid(screen,rows)
         pygame.display.flip()
         clock.tick(FPS)
 
