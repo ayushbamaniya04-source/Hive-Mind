@@ -21,17 +21,20 @@ for i in range(9):
     else:
         rows.append({"y": y, "height": 40, "type": "pathways"})
         y += 40
-
 def draw_grid(screen,rows):
     for row in rows:
         y = row["y"]
         height = row["height"]
         if row["type"] == "crop":
-            color = (34, 139, 34)
+            for col in range(COLS):
+                x = col * CELL_WIDTH
+                color = (34, 139, 34)
+                pygame.draw.rect(screen , color , (x,y,CELL_WIDTH,height))
+                pygame.draw.rect(screen, (0,0,0),(x,y,CELL_WIDTH,height),1)
         else:
                 color = (139, 90, 43)
-        pygame.draw.rect(screen , color , (0,y,SCREEN_WIDTH,height))
-        pygame.draw.rect(screen, (0,0,0),(0,y,SCREEN_WIDTH,height),1)
+                pygame.draw.rect(screen , color , (0,y,SCREEN_WIDTH,height))
+                pygame.draw.rect(screen, (0,0,0),(0,y,SCREEN_WIDTH,height),1)
 
 def main():
     pygame.init()
