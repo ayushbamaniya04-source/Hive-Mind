@@ -5,6 +5,15 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 FPS = 60
 
+uav_x = 20
+uav_y = 44
+uav_radius = 10
+uav_speed = 2
+
+direction = 1
+current_row = 0
+moving_down = False
+
 ROWS = 10
 COLS = 20
 CELL_WIDTH = SCREEN_WIDTH//COLS
@@ -37,6 +46,7 @@ def draw_grid(screen,rows):
                 pygame.draw.rect(screen, (0,0,0),(0,y,SCREEN_WIDTH,height),1)
 
 def main():
+    global uav_x, uav_y, direction, current_row, moving_down
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     pygame.display.set_caption("HIVE_MIND")
@@ -47,8 +57,27 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+        if moving_down:
+
+         uav_y += uav_speed
+
+         if uav_y >= rows[current_row + 2]["y"] + rows[current_row + 2]["height"] // 2:
+          current_row += 2
+          moving_down = False
+          direction *= -1
+
+        else:
+          uav_x += direction * uav_speed
+          if direction == 1 and uav_x >= SCREEN_WIDTH - uav_radius:
+           if current_row + 2 < len(rows):
+            moving_down = True
+
+          elif direction == -1 and uav_x <= uav_radius:
+           if current_row + 2 < len(rows):
+               moving_down = True
         screen.fill((0,0,0))
         draw_grid(screen,rows)
+        pygame.draw.circle(screen, (0, 0, 0), (uav_x, uav_y), uav_radius)
         pygame.display.flip()
         clock.tick(FPS)
 
