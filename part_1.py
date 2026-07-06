@@ -19,8 +19,18 @@ COLS = 20
 CELL_WIDTH = SCREEN_WIDTH//COLS
 CELL_HEIGHT = SCREEN_HEIGHT//ROWS
 
-grid = [[1 for _ in range(COLS)] for _ in range(ROWS)]
+class Cell:
+    def __init__(self, row, col, x, y, width, height):
+        self.row = row
+        self.col = col
 
+        self.x = x
+        self.y = y
+
+        self.width = width
+        self.height = height
+
+        self.scanned = False
 rows = []
 y = 0
 for i in range(9):
@@ -30,6 +40,38 @@ for i in range(9):
     else:
         rows.append({"y": y, "height": 40, "type": "pathways"})
         y += 40
+        
+
+grid = []
+
+crop_row = 0
+
+for row in rows:
+    if row["type"] == "crop":
+
+        cell_row = []
+
+        for col in range(COLS):
+
+            x = col * CELL_WIDTH
+            y = row["y"]
+
+            cell_row.append(
+                Cell(
+                    crop_row,
+                    col,
+                    x,
+                    y,
+                    CELL_WIDTH,
+                    row["height"]
+                )
+            )
+
+        grid.append(cell_row)
+        crop_row += 1
+        
+
+
 def draw_grid(screen,rows):
     for row in rows:
         y = row["y"]
