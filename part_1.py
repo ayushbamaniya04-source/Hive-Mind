@@ -6,18 +6,19 @@ class Field:
         
     def create(self):
         for row in range(5):
+            row_cells = []
             for col in range(20):
                 cell = Cell(row, col)
-                self.cells.append(cell)
-                    
+                row_cells.append(cell)
+
+            self.cells.append(row_cells)
+           
     def draw(self):
         pass
 
     def get_cell(self, row, col):
-        for cell in self.cells:
-            if cell.row == row and cell.col == col:
-                return cell
-        return None
+        
+        return self.cells[row][col]
 
     def update_cell(self, cell, state):
         cell.state = state
