@@ -1,11 +1,15 @@
 class Field:
 
     def __init__(self):
-        pass
-
+        self.cells = []
+        self.rows = []
+        
     def create(self):
-        pass
-
+            for row in range(5):
+                for col in range(20):
+                    cell = Cell(row, col)
+                    self.cells.append(cell)
+                    
     def draw(self):
         pass
 
@@ -17,3 +21,17 @@ class Field:
 
     def reset(self):
         pass
+    
+class Cell:
+        
+        
+    def __init__(self, row, col):
+        self.row = row
+        self.col = col
+        self.state = "healthy"
+        
+field = Field()
+
+field.create()
+
+print(len(field.cells))
