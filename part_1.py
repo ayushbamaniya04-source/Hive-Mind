@@ -1,4 +1,13 @@
+import random
+
 class Field:
+    
+    def generate_problems(self, count):
+        for _ in range(count):
+            row = random.randint(0, 4)
+            col = random.randint(0, 19)
+
+            self.cells[row][col].state = "problem"
 
     def __init__(self):
         self.cells = []
@@ -38,15 +47,17 @@ field = Field()
 
 field.create()
 
-print(len(field.cells))
-crop = field.get_cell(2, 5)
+field.generate_problems(5)
 
-print(crop.row)
-print(crop.col)
-print(crop.state)
-field.update_cell(crop, "problem")
+for row in field.cells:
 
-print(crop.state)
-another_crop = field.get_cell(1, 3)
+    for cell in row:
 
-print(another_crop.state)
+        if cell.state == "problem":
+
+            print(
+                "Problem at:",
+                cell.row,
+                cell.col
+            )
+
