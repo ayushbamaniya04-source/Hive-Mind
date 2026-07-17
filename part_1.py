@@ -69,6 +69,30 @@ class UAV:
     def return_home(self):
         pass
 
+class UGV:
+
+    def __init__(self):
+
+        self.row = 0
+        self.col = 0
+
+        self.battery = 100
+
+        self.status = "idle"
+
+        self.current_task = None
+
+    def receive_task(self):
+        pass
+
+    def move(self):
+        pass
+
+    def spray(self):
+        pass
+
+    def return_home(self):
+        pass
 class MissionControl:
 
     def __init__(self):
@@ -76,6 +100,14 @@ class MissionControl:
     
     def receive_report(self, row, col):
         self.known_problems.append((row, col))
+    
+    def assign_task(self, ugv):
+
+        if len(self.known_problems) > 0:
+
+            ugv.current_task = self.known_problems[0]
+
+            print("Task assigned:", ugv.current_task)
 
 
 
@@ -96,4 +128,10 @@ for row in field.cells:
 uav.scan(field, mission)
 
 print(mission.known_problems)
+
+ugv = UGV()
+
+mission.assign_task(ugv)
+
+print(ugv.current_task)
 
