@@ -43,21 +43,57 @@ class Cell:
         self.col = col
         self.state = "healthy"
         
+class UAV:
+
+    def __init__(self):
+        self.row = 0
+        self.col = 0
+        self.battery = 100
+        self.status = "idle"
+
+    def move(self):
+        pass
+
+    def scan(self, field, mission_control):
+        cell = field.get_cell(self.row, self.col)
+        if cell.state == "problem":
+            mission_control.receive_report(
+            cell.row,
+            cell.col
+        )
+        
+
+    def report(self):
+        pass
+
+    def return_home(self):
+        pass
+
+class MissionControl:
+
+    def __init__(self):
+        self.known_problems = []
+    
+    def receive_report(self, row, col):
+        self.known_problems.append((row, col))
+
+
+
 field = Field()
-
 field.create()
-
 field.generate_problems(5)
 
+uav = UAV()
+mission = MissionControl()
+
 for row in field.cells:
-
     for cell in row:
-
         if cell.state == "problem":
+            uav.row = cell.row
+            uav.col = cell.col
+            break
 
-            print(
-                "Problem at:",
-                cell.row,
-                cell.col
-            )
+uav.scan(field, mission)
+
+print(mission.known_problems)
 
