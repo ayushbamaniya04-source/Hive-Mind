@@ -88,8 +88,17 @@ class UGV:
     def move(self):
         pass
 
-    def spray(self):
-        pass
+    def spray(self, field):
+        
+        if self.current_task is not None:
+            
+            row, col = self.current_task
+            
+            cell = field.get_cell(row, col)
+            
+            cell.state = "healthy"
+            
+            print("Problem fixed at:", row, col)
 
     def return_home(self):
         pass
@@ -133,5 +142,11 @@ ugv = UGV()
 
 mission.assign_task(ugv)
 
+ugv.spray(field)
+
 print(ugv.current_task)
+
+row, col = ugv.current_task
+
+print(field.get_cell(row, col).state)
 
