@@ -86,7 +86,23 @@ class UGV:
         pass
 
     def move(self):
-        pass
+        
+        if self.current_task is None:
+            return
+
+        target_row, target_col = self.current_task
+
+        if self.row < target_row:
+            self.row += 1
+
+        elif self.row > target_row:
+            self.row -= 1
+
+        elif self.col < target_col:
+            self.col += 1
+            
+        elif self.col > target_col:
+            self.col -= 1
 
     def spray(self, field):
         
@@ -141,6 +157,16 @@ print(mission.known_problems)
 ugv = UGV()
 
 mission.assign_task(ugv)
+
+while (ugv.row, ugv.col) != ugv.current_task:
+
+    ugv.move()
+
+    print(
+        "UGV at:",
+        ugv.row,
+        ugv.col
+    )
 
 ugv.spray(field)
 
