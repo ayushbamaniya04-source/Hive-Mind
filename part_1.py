@@ -104,7 +104,7 @@ class UGV:
         elif self.col > target_col:
             self.col -= 1
 
-    def spray(self, field):
+    def spray(self, field, mission_control):
         
         if self.current_task is not None:
             
@@ -115,7 +115,20 @@ class UGV:
             cell.state = "healthy"
             
             print("Problem fixed at:", row, col)
+            
+            mission_control.complete_task(row, col)
+            
+    def get_spray_position(self, problem_row, problem_col):
+        
+        if problem_row == 0:
+            return (1, problem_col)
 
+        elif problem_row == 2:
+            return (3, problem_col)
+        
+        elif problem_row == 4:
+            return (3, problem_col)
+    
     def return_home(self):
         pass
 class MissionControl:
@@ -134,7 +147,11 @@ class MissionControl:
 
             print("Task assigned:", ugv.current_task)
 
+    def complete_task(self, row, col):
+        if (row, col) in self.known_problems:
+            self.known_problems.remove((row, col))
 
+            print("Task completed:", (row, col))
 
 field = Field()
 field.create()
@@ -168,11 +185,14 @@ while (ugv.row, ugv.col) != ugv.current_task:
         ugv.col
     )
 
-ugv.spray(field)
+ugv.spray(field,mission)
 
 print(ugv.current_task)
 
 row, col = ugv.current_task
 
 print(field.get_cell(row, col).state)
+print(ugv.get_spray_position(2, 4))
+print(ugv.get_spray_position(0, 7))
+print(ugv.get_spray_position(4, 1))
 
