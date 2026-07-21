@@ -4,7 +4,7 @@ class Field:
     
     def generate_problems(self, count):
         for _ in range(count):
-            row = random.randint(0, 4)
+            row = random.choice(self.crop_rows)
             col = random.randint(0, 19)
 
             self.cells[row][col].state = "problem"
@@ -12,6 +12,7 @@ class Field:
     def __init__(self):
         self.cells = []
         self.rows = []
+        self.crop_rows = [0, 2, 4]
         
     def create(self):
         for row in range(5):
@@ -54,13 +55,14 @@ class UAV:
     def move(self):
         pass
 
-    def scan(self, field, mission_control):
-        cell = field.get_cell(self.row, self.col)
-        if cell.state == "problem":
-            mission_control.receive_report(
-            cell.row,
-            cell.col
-        )
+    def scan_field(self, field, mission_control):
+        for row in field.cells:
+            for cell in row:
+                if cell.state == "problem":
+                    mission_control.receive_report(
+                    cell.row,
+                    cell.col
+                )
         
 
     def report(self):
@@ -165,9 +167,10 @@ for row in field.cells:
         if cell.state == "problem":
             uav.row = cell.row
             uav.col = cell.col
+            
             break
 
-uav.scan(field, mission)
+uav.scan_field(field, mission)
 
 print(mission.known_problems)
 
@@ -186,6 +189,7 @@ while (ugv.row, ugv.col) != ugv.current_task:
     )
 
 ugv.spray(field,mission)
+print(mission.known_problems)
 
 print(ugv.current_task)
 
