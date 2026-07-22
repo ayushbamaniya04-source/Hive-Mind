@@ -77,8 +77,11 @@ class UGV:
 
         self.row = 0
         self.col = 0
+        self.home_row = 1
+        self.home_col = 0
 
         self.battery = 100
+        self.battery = 25
 
         self.status = "idle"
 
@@ -87,6 +90,9 @@ class UGV:
 
     def receive_task(self):
         pass
+    
+    def battery_low(self):
+        return self.battery <= 20
 
     def move(self):
         
@@ -96,16 +102,20 @@ class UGV:
         target_row, target_col = self.destination
 
         if self.row < target_row:
-            self.row += 1
+           self.row += 1
+           self.battery -= 1
 
         elif self.row > target_row:
             self.row -= 1
+            self.battery -= 1
 
         elif self.col < target_col:
             self.col += 1
-            
+            self.battery -= 1
+        
         elif self.col > target_col:
             self.col -= 1
+            self.battery -= 1
 
     def spray(self, field, mission_control):
         
@@ -121,6 +131,9 @@ class UGV:
             
             mission_control.complete_task(row, col)
             
+        if self.current_task is not None:
+            self.battery -= 2
+            
     def get_spray_position(self, problem_row, problem_col):
         
         if problem_row == 0:
@@ -132,8 +145,16 @@ class UGV:
         elif problem_row == 4:
             return (3, problem_col)
     
+    def charge(self):
+        self.battery = 100
+
+        print("Battery fully charged")
+    
     def return_home(self):
-        pass
+        self.destination = (
+            self.home_row,
+            self.home_col
+            )
 class MissionControl:
 
     def __init__(self):
@@ -197,10 +218,30 @@ while len(mission.known_problems) > 0:
         print(
             "UGV at:",
             ugv.row,
-            ugv.col
+            ugv.col,
+            "Battery:",
+            ugv.battery
         )
 
     ugv.spray(field, mission)
+    
+    if ugv.battery_low():
+        
+        print("Battery low")
+
+        ugv.return_home()
+
+        while (ugv.row, ugv.col) != ugv.destination:
+            
+            ugv.move()
+
+            print(
+                "UGV returning:",
+                ugv.row,
+                ugv.col
+                )
+
+        ugv.charge()
     
 print(mission.known_problems)
 
