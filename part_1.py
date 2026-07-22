@@ -83,6 +83,7 @@ class UGV:
         self.status = "idle"
 
         self.current_task = None
+        self.destination = None
 
     def receive_task(self):
         pass
@@ -92,7 +93,7 @@ class UGV:
         if self.current_task is None:
             return
 
-        target_row, target_col = self.current_task
+        target_row, target_col = self.destination
 
         if self.row < target_row:
             self.row += 1
@@ -145,7 +146,16 @@ class MissionControl:
 
         if len(self.known_problems) > 0:
 
-            ugv.current_task = self.known_problems[0]
+            problem = self.known_problems[0]
+
+            ugv.current_task = problem
+
+            row, col = problem
+
+            ugv.destination = ugv.get_spray_position(
+                row,
+                col
+            )
 
             print("Task assigned:", ugv.current_task)
 
@@ -180,7 +190,7 @@ while len(mission.known_problems) > 0:
 
     mission.assign_task(ugv)
 
-    while (ugv.row, ugv.col) != ugv.current_task:
+    while (ugv.row, ugv.col) != ugv.destination:
 
         ugv.move()
 
