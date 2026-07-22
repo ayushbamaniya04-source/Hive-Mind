@@ -176,19 +176,22 @@ print(mission.known_problems)
 
 ugv = UGV()
 
-mission.assign_task(ugv)
+while len(mission.known_problems) > 0:
 
-while (ugv.row, ugv.col) != ugv.current_task:
+    mission.assign_task(ugv)
 
-    ugv.move()
+    while (ugv.row, ugv.col) != ugv.current_task:
 
-    print(
-        "UGV at:",
-        ugv.row,
-        ugv.col
-    )
+        ugv.move()
 
-ugv.spray(field,mission)
+        print(
+            "UGV at:",
+            ugv.row,
+            ugv.col
+        )
+
+    ugv.spray(field, mission)
+    
 print(mission.known_problems)
 
 print(ugv.current_task)
