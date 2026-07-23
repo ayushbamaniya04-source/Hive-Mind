@@ -1,3 +1,4 @@
+import pygame
 import random
 
 class Field:
@@ -186,73 +187,122 @@ class MissionControl:
 
             print("Task completed:", (row, col))
 
-if __name__ == "__main__":
-    
-    field = Field()
-    field.create()
-    field.generate_problems(5)
+field = Field()
+field.create()
+field.generate_problems(5)
 
-    uav = UAV()
-    mission = MissionControl()
+pygame.init()
+
+CELL_SIZE = 40
+
+ROWS = 5
+COLS = 20
+
+WIDTH = COLS * CELL_SIZE
+HEIGHT = ROWS * CELL_SIZE
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock = pygame.time.Clock()
+
+def draw(screen, field, ugv):
+
+    screen.fill((30, 30, 30))
 
     for row in field.cells:
         for cell in row:
-            if cell.state == "problem":
-                uav.row = cell.row
-                uav.col = cell.col
-                
-                break
 
-    uav.scan_field(field, mission)
+            x = cell.col * CELL_SIZE
+            y = cell.row * CELL_SIZE
 
-    print(mission.known_problems)
+            if cell.row in [0, 2, 4]:
 
-    ugv = UGV()
+                color = (0, 180, 0)
 
-    while len(mission.known_problems) > 0:
+                if cell.state == "problem":
+                    color = (220, 0, 0)
 
-        mission.assign_task(ugv)
+            else:
+                color = (150, 120, 80)
 
-        while (ugv.row, ugv.col) != ugv.destination:
-
-            ugv.move()
-
-            print(
-                "UGV at:",
-                ugv.row,
-                ugv.col,
-                "Battery:",
-                ugv.battery
+            pygame.draw.rect(
+                screen,
+                color,
+                (x, y, CELL_SIZE, CELL_SIZE)
             )
 
-        ugv.spray(field, mission)
-        
-        if ugv.battery_low():
+            pygame.draw.rect(
+                screen,
+                (0, 0, 0),
+                (x, y, CELL_SIZE, CELL_SIZE),
+                1
+            )
+
+    pygame.draw.rect(
+        screen,
+        (255, 255, 0),
+        (
+            ugv.home_col * CELL_SIZE,
+            ugv.home_row * CELL_SIZE,
+            CELL_SIZE,
+            CELL_SIZE
+        )
+    )
+
+    pygame.draw.rect(
+        screen,
+        (0, 0, 255),
+        (
+            ugv.col * CELL_SIZE + 5,
+            ugv.row * CELL_SIZE + 5,
+            CELL_SIZE - 10,
+            CELL_SIZE - 10
+        )
+    )
+
+    pygame.display.flip()
+
+uav = UAV()
+mission = MissionControl()
+
+for row in field.cells:
+    for cell in row:
+        if cell.state == "problem":
+            uav.row = cell.row
+            uav.col = cell.col
             
-            print("Battery low")
+            break
 
-            ugv.return_home()
+uav.scan_field(field, mission)
 
-            while (ugv.row, ugv.col) != ugv.destination:
-                
-                ugv.move()
+print(mission.known_problems)
 
-                print(
-                    "UGV returning:",
-                    ugv.row,
-                    ugv.col
-                    )
+ugv = UGV()
 
-            ugv.charge()
+running = True
+
+while running:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    
+    if ugv.current_task is None and len(mission.known_problems) > 0:
+        mission.assign_task(ugv)
+
+    if ugv.current_task is not None:
+        if (ugv.row, ugv.col) != ugv.destination:
+            ugv.move()
+
+        else:
+            ugv.spray(field, mission)
+            ugv.current_task = None
         
-    print(mission.known_problems)
+    draw(
+        screen,
+        field,
+        ugv
+    )
 
-    print(ugv.current_task)
+    clock.tick(2)
 
-    row, col = ugv.current_task
-
-    print(field.get_cell(row, col).state)
-    print(ugv.get_spray_position(2, 4))
-    print(ugv.get_spray_position(0, 7))
-    print(ugv.get_spray_position(4, 1))
-
+pygame.quit()
